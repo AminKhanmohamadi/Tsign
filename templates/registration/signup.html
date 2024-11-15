@@ -1,17 +1,17 @@
 {% extends '_base.html' %}
 
 {% block title %}
-    Login
+    Sign Up
 {% endblock %}
 
 
 {% block content %}
     <div class="log-form">
-        <h2>Login to your account</h2>
+        <h2>Signup to your account</h2>
         <form method="POST" action="">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-info">Login</button>
+            <button type="submit" class="btn btn-info">Sign Up</button>
         </form>
     </div><!--end log form -->
 {% endblock %}
