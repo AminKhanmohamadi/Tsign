@@ -1,163 +1,116 @@
 {% extends '_base.html' %}
 {% block title %} Library {% endblock %}
 {% block content %}
-    <div class="row mb-5 p-3">
-        <div class="col">
-            <!-- Breadcrumb -->
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{% url 'folder_list' %}">Home</a>
-                    </li>
-                    {% for folder in breadcrumbs %}
+    <div class="container bg-light p-4 rounded shadow">
+        <div class="row mb-4">
+            <div class="col">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-white p-2 rounded shadow-sm">
                         <li class="breadcrumb-item">
-                            <a href="{% url 'folder_list' %}?folder={{ folder.id }}"
-                            >{{ folder.name }}</a
-                            >
+                            <a href="{% url 'folder_list' %}" class="text-primary">Home</a>
                         </li>
-                    {% endfor %}
-                </ol>
-            </nav>
-        </div>
-        <div class="col text-end">
-            <button
-                    class="btn btn-primary"
-                    data-bs-toggle="modal"
-                    data-bs-target="#uploadModal"
-            >
-                <i class="bi bi-upload"></i> Upload File
-            </button>
-
-            <button
-                    class="btn btn-success"
-                    data-bs-toggle="modal"
-                    data-bs-target="#newFolderModal"
-            >
-                <i class="bi bi-folder-plus"></i>Create Folder
-            </button>
-        </div>
-    </div>
-
-    <div class="row g-4 card">
-        <!-- Folders -->
-        <div class="table-responsive">
-            <div class="mt-40">
-                <div class="px*30 py-20 bg-light rounded-5">
-                    <div class="row">
-                        <div class="col-lg-3 col-sm-12">
-                            <div class="text-light-1">Name</div>
-                        </div>
-                        <div class="col-lg-2 col-sm-4 mt-sm-10">
-                            <div class="text-light-1">cerated</div>
-                        </div>
-                        <div class="col-lg-2 col-sm-2 mt-sm-10">
-                            <div class="text-light-1">Delete/Update</div>
-                        </div>
-
-                        <div class="col-lg-1 col-sm-2 mt-sm-10">
-                            <div class="text-light-1">Size</div>
-                        </div>
-                        <div class="col-lg-1 col-sm-2 mt-sm-10">
-                            <div class="text-light-1">Type</div>
-                        </div>
-                        <div class="col-lg-2 col-sm-2 mt-sm-10">
-                            <div class="text-light-1">More</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {% for folder in folders %}
-            <div class="col-md-12">
-                <div class="folder-card h-100">
-                    <div class="card-body row text-left pt-2">
-                        <div class="col-lg-3 col-sm-12">
-                            <i class="bi bi-folder-fill folder-icon"></i>
-                            <h5 class="card-title mt-2">{{ folder.name }}</h5>
-                            <p class="text-muted small">{{ folder.files.count }} items</p>
-                        </div>
-                        <div class="col-lg-2">{{ folder.datetime_created|date:"Y/m/d" }}</div>
-                        <div class="col-lg-2">
-                            <div class="btn-group">
-                                <button
-                                        class="btn btn-sm btn-warning rename-folder"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#renamefModal"
-                                        data-id="{{ folder.id }}"
-                                        data-name="{{ folder.name }}"
-                                >
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-
-                                <button class="btn btn-sm btn-danger delete-folder"
-                                        data-id="{{ folder.id }}"
-                                        data-url="{% url 'delete_folder' folder.id %}">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-
-                            </div>
-                        </div>
-                        <div class="col-lg-1 col-sm-2 mt-sm-10"></div>
-                        <div class="col-lg-1 col-sm-2 mt-sm-10"></div>
-                        <div class="col-lg-2">
-                            <div class="btn-group">
-                                <a
-                                        href="{% url 'folder_list' %}?folder={{ folder.id }}"
-                                        class="btn btn-sm btn-primary"
-                                >
-                                    <i class="bi bi-folder2-open"></i>Open
+                        {% for folder in breadcrumbs %}
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'folder_list' %}?folder={{ folder.id }}" class="text-primary">
+                                    {{ folder.name }}
                                 </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </nav>
             </div>
-        {% endfor %}
+            <div class="col text-end">
 
-        <!-- Files -->
-        {% for file in files %}
-            <div class="col-md-12 mt-5">
-                <div class="file-card h-100">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-lg-3 col-sm-12">
-                                {% if file.file_type == 'image' %}
-                                    <img
-                                            src="{{ file.file.url }}"
-                                            class="thumbnail"
-                                            alt="{{ file.name }}"
-                                    />
-                                {% elif file.file_type == 'video' %}
-                                    <video class="thumbnail" autoplay muted loop></video>
-                                {% endif %}
-                                <h5 class="card-title mt-2">{{ file.name }}</h5>
-                            </div>
-                            <div class="col-lg-2">{{ file.datetime_created|date:"Y/m/d" }}</div>
-                            <div class="col-lg-2">
-                                <div class="btn-group">
-                                    <button class="btn btn-warning rename-file" data-bs-toggle="modal"
-                                            data-bs-target="#renameFileModal" data-id="{{ file.id }}"
-                                            data-name="{{ file.name }}">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger delete-file"
-                                            data-id="{{ file.id }}"
-                                            data-url="{% url 'delete_file' file.id %}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                <button
+                        class="btn btn-primary me-2 px-4 rounded-pill shadow-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#uploadModal"
+                >
+                    <i class="bi bi-upload"></i> Upload File
+                </button>
 
+                <button
+                        class="btn btn-success px-4 rounded-pill shadow-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#newFolderModal"
+                >
+                    <i class="bi bi-folder-plus"></i> Create Folder
+                </button>
+            </div>
+        </div>
+
+        <!-- List folders and filds -->
+        <div class="row g-4">
+            <!-- Folders -->
+            {% for folder in folders %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-folder-fill text-warning fs-2 me-3"></i>
+                                <div>
+                                    <h5 class="card-title m-0">{{ folder.name }}</h5>
+                                    <p class="text-muted small">{{ folder.files.count }} items</p>
                                 </div>
                             </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p class="text-muted small">{{ folder.datetime_created|date:"Y/m/d" }}</p>
+                                <div>
+                                    <a href="{% url 'folder_list' %}?folder={{ folder.id }}"
+                                       class="btn btn-sm btn-primary">
+                                        <i class="bi bi-folder2-open"></i> Open
+                                    </a>
+                                    <button
+                                            class="btn btn-sm btn-warning rename-folder"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#renamefModal"
+                                            data-id="{{ folder.id }}"
+                                            data-name="{{ folder.name }}"
+                                    >
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button
+                                            class="btn btn-sm btn-danger delete-folder"
+                                            data-id="{{ folder.id }}"
+                                            data-url="{% url 'delete_folder' folder.id %}"
+                                    >
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
 
-                            <div class="col-lg-1">
-                                <p class="text-muted small">{{ file.size|filesizeformat }}</p>
+            <!-- Files -->
+            {% for file in files %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                {% if file.file_type == 'image' %}
+                                    <img src="{{ file.file.url }}"
+                                         alt="{{ file.name }}"
+                                         class="rounded img-thumbnail me-3"
+                                         style="width: 60px; height: 60px; object-fit: cover;"/>
+                                {% elif file.file_type == 'video' %}
+                                    <div class="video-icon d-flex justify-content-center align-items-center bg-light border rounded"
+                                         style="width: 60px; height: 60px; position: relative;">
+                                        <i class="bi bi-play-circle-fill text-primary" style="font-size: 2rem;"></i>
+                                    </div>
+                                {% else %}
+
+                                    <div class="alert alert-warning">Unsupported file type</div>
+                                {% endif %}
+                                <div>
+                                    <h5 class="card-title m-2">{{ file.name }}</h5>
+                                </div>
                             </div>
-                            <div class="col-lg-1">
-                                <p class="text-muted small">{{ file.get_file_type_display }}</p>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="btn-group w-50">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p class="text-muted small">{{ file.datetime_created|date:"Y/m/d" }}</p>
+                                <div>
                                     <button
                                             class="btn btn-sm btn-primary view-file"
                                             data-bs-toggle="modal"
@@ -170,14 +123,31 @@
                                     >
                                         <i class="bi bi-eye"></i> View
                                     </button>
+                                    <button
+                                            class="btn btn-sm btn-warning rename-file"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#renameFileModal"
+                                            data-id="{{ file.id }}"
+                                            data-name="{{ file.name }}"
+                                    >
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button
+                                            class="btn btn-sm btn-danger delete-file"
+                                            data-id="{{ file.id }}"
+                                            data-url="{% url 'delete_file' file.id %}"
+                                    >
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
+
 
     <!-- Modal ٰView File -->
     <div class="modal fade"
@@ -219,18 +189,18 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteFileModalLabel">حذف فایل</h5>
+                    <h5 class="modal-title" id="deleteFileModalLabel">Delete File</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    آیا مطمئن هستید که می‌خواهید این فایل را حذف کنید؟
+                    Are you sure you want to delete this file?
                 </div>
                 <div class="modal-footer">
                     <form id="deleteFileForm" method="post">
                         {% csrf_token %}
                         <input type="hidden" id="file_id" name="file_id" value="">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
-                        <button type="submit" class="btn btn-danger">حذف</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cansel</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </div>
             </div>
@@ -243,25 +213,23 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteFolderModalLabel">حذف فایل</h5>
+                    <h5 class="modal-title" id="deleteFolderModalLabel">Delete Folder</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    آیا مطمئن هستید که می‌خواهید این فولدر را حذف کنید؟
+                    Are you sure you want to delete this folder?
                 </div>
                 <div class="modal-footer">
                     <form id="deleteFolderForm" method="post">
                         {% csrf_token %}
                         <input type="hidden" id="folder_id" name="folder_id" value="">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
-                        <button type="submit" class="btn btn-danger">حذف</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
-
 
     {% include 'core/partial/folder_create.html' %}
     {% include 'core/partial/file_upload.html' %}
@@ -327,8 +295,6 @@
             }
         });
         document.addEventListener("DOMContentLoaded", function () {
-
-            // Handle file rename button click
             const renameButtons = document.querySelectorAll('.rename-file');
             renameButtons.forEach(button => {
                 button.addEventListener('click', function () {
@@ -339,7 +305,6 @@
                 });
             });
 
-            // Handle rename form submission
             const renameFileForm = document.getElementById('renameFileForm');
             renameFileForm.addEventListener('submit', function (e) {
                 e.preventDefault();
@@ -376,53 +341,53 @@
                     .catch(error => console.error('Error:', error));
             });
         });
-        document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchInput');
-    if (!searchInput) {
-        console.error('Search input not found!');
-        return;
-    }
-
-    let searchTimeout;
-    const filesContainer = document.querySelector('.row.g-4.card');
-    if (!filesContainer) {
-        console.error('Files container not found!');
-        return;
-    }
-
-    // ذخیره محتوای اصلی
-    const originalContent = filesContainer.innerHTML;
-
-    searchInput.addEventListener('input', function() {
-        console.log('Search input changed:', this.value);  // برای دیباگ
-        clearTimeout(searchTimeout);
-
-        searchTimeout = setTimeout(() => {
-            const searchTerm = this.value.trim();
-            const urlParams = new URLSearchParams(window.location.search);
-            const folderId = urlParams.get('folder');
-
-            // اگر سرچ خالی باشد
-            if (!searchTerm) {
-                filesContainer.innerHTML = originalContent;
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            if (!searchInput) {
+                console.error('Search input not found!');
                 return;
             }
 
-            console.log('Sending search request for:', searchTerm);  // برای دیباگ
+            let searchTimeout;
+            const filesContainer = document.querySelector('.row.g-4.card');
+            if (!filesContainer) {
+                console.error('Files container not found!');
+                return;
+            }
 
-            // درخواست جستجو
-            fetch(`/search/?search=${encodeURIComponent(searchTerm)}&folder=${folderId || ''}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+
+            const originalContent = filesContainer.innerHTML;
+
+            searchInput.addEventListener('input', function () {
+                console.log('Search input changed:', this.value);
+                clearTimeout(searchTimeout);
+
+                searchTimeout = setTimeout(() => {
+                    const searchTerm = this.value.trim();
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const folderId = urlParams.get('folder');
+
+
+                    if (!searchTerm) {
+                        filesContainer.innerHTML = originalContent;
+                        return;
                     }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Search results:', data);  // برای دیباگ
 
-                    // نگه داشتن هدر جدول
-                    let newContent = `
+                    console.log('Sending search request for:', searchTerm);
+
+
+                    fetch(`/search/?search=${encodeURIComponent(searchTerm)}&folder=${folderId || ''}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Search results:', data);
+
+
+                            let newContent = `
                         <div class="table-responsive">
                             <div class="mt-40">
                                 <div class="px-30 py-20 bg-light rounded-5">
@@ -450,9 +415,9 @@
                             </div>
                         </div>`;
 
-                    // اضافه کردن نتایج جستجو
-                    data.files.forEach(file => {
-                        newContent += `
+
+                            data.files.forEach(file => {
+                                newContent += `
                             <div class="col-md-12 mt-5">
                                 <div class="file-card h-100">
                                     <div class="card-body">
@@ -465,8 +430,8 @@
                                             </div>
                                             <div class="col-lg-2">
                                                 <div class="btn-group">
-                                                    <button class="btn btn-sm btn-danger" onclick="deleteFile(${file.id})">حذف</button>
-                                                    <button class="btn btn-sm btn-warning" onclick="updateFileName(${file.id}, '${file.name}')">ویرایش</button>
+                                                    <button class="btn btn-sm btn-danger" onclick="deleteFile(${file.id})">Delete</button>
+                                                    <button class="btn btn-sm btn-warning" onclick="updateFileName(${file.id}, '${file.name}')">Update</button>
                                                 </div>
                                             </div>
                                             <div class="col-lg-1">
@@ -477,43 +442,43 @@
                                             </div>
                                             <div class="col-lg-2">
                                                 <div class="btn-group w-50">
-                                                    <button class="btn btn-sm btn-primary">نمایش</button>
+                                                    <button class="btn btn-sm btn-primary">View</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>`;
-                    });
+                            });
 
-                    // اگر نتیجه‌ای نباشد
-                    if (data.files.length === 0) {
-                        newContent += `
+                            // اگر نتیجه‌ای نباشد
+                            if (data.files.length === 0) {
+                                newContent += `
                             <div class="col-12 text-center mt-4">
                                 <p>هیچ فایلی با این نام پیدا نشد.</p>
                             </div>`;
-                    }
+                            }
 
-                    filesContainer.innerHTML = newContent;
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    filesContainer.innerHTML = `
+                            filesContainer.innerHTML = newContent;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            filesContainer.innerHTML = `
                         <div class="col-12 text-center mt-4">
                             <p class="text-danger">خطا در جستجو. لطفا مجددا تلاش کنید.</p>
                         </div>`;
-                });
-        }, 300);
-    });
+                        });
+                }, 300);
+            });
 
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-});
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+        });
 
     </script>
 {% endblock %}

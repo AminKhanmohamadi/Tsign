@@ -1,6 +1,5 @@
 $(document).ready(function () {
 
-    // نمایش پیش‌نمایش فایل هنگام کلیک روی آن
     $('.view-file').on('click', function () {
         const name = $(this).data('name');
         const type = $(this).data('type');
@@ -19,14 +18,13 @@ $(document).ready(function () {
             $('#filePreview').html(`
                 <video class="w-100" controls>
                     <source src="${url}" type="video/mp4">
-                    مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                        Your browser does not support video playback.
                 </video>`);
         } else {
-            $('#filePreview').html('<p>پیش‌نمایش برای این نوع فایل پشتیبانی نمی‌شود.</p>');
+            $('#filePreview').html('<p>Preview is not supported for this file type.</p>');
         }
     });
 
-    // نمایش مودال حذف فایل
     $('.delete-file').on('click', function () {
         const fileId = $(this).data('id');
         $('#file_id').val(fileId);
@@ -34,8 +32,6 @@ $(document).ready(function () {
         const deleteModal = new bootstrap.Modal($('#deleteFileModal')[0]);
         deleteModal.show();
     });
-
-    // ارسال درخواست حذف فایل
     $('#deleteFileForm').on('submit', function (event) {
         event.preventDefault();
 
@@ -63,7 +59,6 @@ $(document).ready(function () {
         });
     });
 
-    // نمایش مودال حذف فولدر
     $('.delete-folder').on('click', function () {
         const folderId = $(this).data('id');
         $('#folder_id').val(folderId);
@@ -71,8 +66,6 @@ $(document).ready(function () {
         const deleteModal = new bootstrap.Modal($('#deleteFolderModal')[0]);
         deleteModal.show();
     });
-
-    // ارسال درخواست حذف فولدر
     $('#deleteFolderForm').on('submit', function (event) {
         event.preventDefault();
 
@@ -85,7 +78,7 @@ $(document).ready(function () {
             method: 'POST',
             contentType: 'application/json',
             headers: {
-                'X-CSRFToken': csrfToken  // اضافه کردن CSRF token به هدر
+                'X-CSRFToken': csrfToken
             },
             data: JSON.stringify({
                 'folder_id': folderId

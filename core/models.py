@@ -1,3 +1,4 @@
+import mimetypes
 from django.db import models
 
 from core.validators import validate_file
@@ -43,7 +44,14 @@ class File(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.size = self.file.size
-            super().save(*args, **kwargs)
+            mime_type, _ = mimetypes.guess_type(self.file.name)
+            if mime_type and mime_type.startswith('image'):
+                self.file_type = 'image'
+            elif mime_type and mime_type.startswith('video'):
+                self.file_type = 'video'
+            else:
+                self.file_type = 'unknown'
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name

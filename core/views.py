@@ -14,7 +14,7 @@ from .models import File, Folder
 
 class FolderListView(LoginRequiredMixin, ListView):
     model = Folder
-    template_name = 'filemanager/folder_list.html'
+    template_name = 'core/folder_list.html'
     context_object_name = 'folders'
 
     def get_queryset(self):
@@ -28,7 +28,6 @@ class FolderListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         parent_id = self.request.GET.get('folder')
         context['files'] = File.objects.filter(
-
             folder_id=parent_id
         )
         if parent_id:
@@ -124,10 +123,8 @@ class FileSearchView(LoginRequiredMixin, ListView):
         if not query:
             return File.objects.none()
         lookups = Q(name__icontains=query)
-
         if folder_id:
             lookups &= Q(folder_id=folder_id)
-
         return File.objects.filter(lookups).order_by('-datetime_created')
 
     def get_context_data(self, **kwargs):
