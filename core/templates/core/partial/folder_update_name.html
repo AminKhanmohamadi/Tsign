@@ -1,0 +1,21 @@
+<div class="modal fade" id="renamefModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change name Folder</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="renameFolderForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <input type="hidden" name="folder_id" value="{{ folder.id }}">
+                        <label for="folder_name" class="form-label">Name </label>
+                        <input type="text" class="form-control" id="folder_name" name="name" value="{{ folder.name }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

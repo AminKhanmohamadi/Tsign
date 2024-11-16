@@ -52,3 +52,5 @@ class File(models.Model):
         verbose_name = 'file'
         verbose_name_plural = 'files'
         unique_together = (('name', 'file_type'),)
+
+

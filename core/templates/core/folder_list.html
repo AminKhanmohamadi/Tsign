@@ -168,7 +168,7 @@
                                             data-date="{{ file.datetime_created|date:'Y/m/d' }}"
                                             data-url="{{ file.file.url }}"
                                     >
-                                        <i class="bi bi-eye"></i> نمایش
+                                        <i class="bi bi-eye"></i> View
                                     </button>
                                 </div>
                             </div>
@@ -348,16 +348,16 @@
                 const newName = document.getElementById('file_name').value;
 
                 fetch("{% url 'file_update' %}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                        },
-                        body: JSON.stringify({
-                            file_id: fileId,
-                            name: newName
-                        })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({
+                        file_id: fileId,
+                        name: newName
                     })
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -376,6 +376,144 @@
                     .catch(error => console.error('Error:', error));
             });
         });
+        document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) {
+        console.error('Search input not found!');
+        return;
+    }
+
+    let searchTimeout;
+    const filesContainer = document.querySelector('.row.g-4.card');
+    if (!filesContainer) {
+        console.error('Files container not found!');
+        return;
+    }
+
+    // ذخیره محتوای اصلی
+    const originalContent = filesContainer.innerHTML;
+
+    searchInput.addEventListener('input', function() {
+        console.log('Search input changed:', this.value);  // برای دیباگ
+        clearTimeout(searchTimeout);
+
+        searchTimeout = setTimeout(() => {
+            const searchTerm = this.value.trim();
+            const urlParams = new URLSearchParams(window.location.search);
+            const folderId = urlParams.get('folder');
+
+            // اگر سرچ خالی باشد
+            if (!searchTerm) {
+                filesContainer.innerHTML = originalContent;
+                return;
+            }
+
+            console.log('Sending search request for:', searchTerm);  // برای دیباگ
+
+            // درخواست جستجو
+            fetch(`/search/?search=${encodeURIComponent(searchTerm)}&folder=${folderId || ''}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Search results:', data);  // برای دیباگ
+
+                    // نگه داشتن هدر جدول
+                    let newContent = `
+                        <div class="table-responsive">
+                            <div class="mt-40">
+                                <div class="px-30 py-20 bg-light rounded-5">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-sm-12">
+                                            <div class="text-light-1">Name</div>
+                                        </div>
+                                        <div class="col-lg-2 col-sm-4 mt-sm-10">
+                                            <div class="text-light-1">Created</div>
+                                        </div>
+                                        <div class="col-lg-2 col-sm-2 mt-sm-10">
+                                            <div class="text-light-1">Delete/Update</div>
+                                        </div>
+                                        <div class="col-lg-1 col-sm-2 mt-sm-10">
+                                            <div class="text-light-1">Size</div>
+                                        </div>
+                                        <div class="col-lg-1 col-sm-2 mt-sm-10">
+                                            <div class="text-light-1">Type</div>
+                                        </div>
+                                        <div class="col-lg-2 col-sm-2 mt-sm-10">
+                                            <div class="text-light-1">More</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+
+                    // اضافه کردن نتایج جستجو
+                    data.files.forEach(file => {
+                        newContent += `
+                            <div class="col-md-12 mt-5">
+                                <div class="file-card h-100">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-3 col-sm-12">
+                                                <h5 class="card-title mt-2">${file.name}</h5>
+                                            </div>
+                                            <div class="col-lg-2">
+                                                ${file.created}
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-danger" onclick="deleteFile(${file.id})">حذف</button>
+                                                    <button class="btn btn-sm btn-warning" onclick="updateFileName(${file.id}, '${file.name}')">ویرایش</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-1">
+                                                ${formatFileSize(file.size)}
+                                            </div>
+                                            <div class="col-lg-1">
+                                                ${file.type}
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <div class="btn-group w-50">
+                                                    <button class="btn btn-sm btn-primary">نمایش</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                    });
+
+                    // اگر نتیجه‌ای نباشد
+                    if (data.files.length === 0) {
+                        newContent += `
+                            <div class="col-12 text-center mt-4">
+                                <p>هیچ فایلی با این نام پیدا نشد.</p>
+                            </div>`;
+                    }
+
+                    filesContainer.innerHTML = newContent;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    filesContainer.innerHTML = `
+                        <div class="col-12 text-center mt-4">
+                            <p class="text-danger">خطا در جستجو. لطفا مجددا تلاش کنید.</p>
+                        </div>`;
+                });
+        }, 300);
+    });
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+});
 
     </script>
 {% endblock %}

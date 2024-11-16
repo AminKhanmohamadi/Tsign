@@ -13,25 +13,34 @@
 </head>
 <body>
 <!-- start Navbar -->
-<nav class="navbar navbar-expand-lg bg-gradient-primary navbar-light border-bottom shadow-sm p-3 mb-5 bg-white rounded ">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Library</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{% url 'folder_list' %}">Home</a>
-                </li>
-            </ul>
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
-        </div>
+<div class="container-fluid">
+    <a class="navbar-brand" href="#">Library</a>
+
+
+    <button class="btn btn-outline-success" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" type="submit">Search</button>
+
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'folder_list' %}">Home</a>
+            </li>
+        </ul>
+
+        <form class="d-flex" action="{% url 'file_search' %}" method="get">
+            <input type="search"
+                   name="search"
+                   class="form-control me-2"
+                   placeholder="Search"
+                   value="{{ request.GET.search|default:'' }}"
+                   required>
+            {% if request.GET.folder %}
+                <input type="hidden" name="folder" value="{{ request.GET.folder }}">
+            {% endif %}
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
     </div>
-</nav>
+</div>
 <!-- end Navbar -->
 {% block content %}
 
@@ -40,7 +49,7 @@
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'js/main.js' %}"></script>
 {% block exterajs %}
-	
+
 {% endblock %}
 </body>
 </html>

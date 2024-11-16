@@ -1,0 +1,21 @@
+<div class="modal fade" id="renameFileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chane Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="renameFileForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <input type="hidden" name="file_id" id="file_id" value="{{ file.id }}">
+                        <label for="file_name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="file_name" name="name" value="{{ file.name }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
