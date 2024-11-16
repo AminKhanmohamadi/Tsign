@@ -5,7 +5,7 @@ from core.validators import validate_file
 
 # Create your models here.
 class Folder(models.Model):
-    name = models.CharField(max_length=100 , db_index=True)
+    name = models.CharField(max_length=100, db_index=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     datetime_created = models.DateTimeField(auto_now_add=True)
     datetime_modified = models.DateTimeField(auto_now=True)
@@ -17,6 +17,13 @@ class Folder(models.Model):
         verbose_name = 'folder'
         verbose_name_plural = 'folders'
 
+    def get_path(self):
+        path = [self]
+        parent = self.parent
+        while parent:
+            path.append(parent)
+            parent = parent.parent
+        return list(reversed(path))
 
 
 class File(models.Model):
@@ -24,11 +31,11 @@ class File(models.Model):
         ('image', 'image'),
         ('video', 'video'),
     )
-    name = models.CharField(max_length=100 , db_index=True)
-    file = models.FileField(upload_to='files' , validators=[validate_file])
-    file_type = models.CharField(max_length=100,choices=TYPE_CHOICES , db_index=True)
+    name = models.CharField(max_length=100, db_index=True)
+    file = models.FileField(upload_to='files', validators=[validate_file])
+    file_type = models.CharField(max_length=100, choices=TYPE_CHOICES, db_index=True)
     size = models.PositiveBigIntegerField(editable=False)
-    folder = models.ForeignKey('Folder', on_delete=models.CASCADE, null=True, blank=True , related_name='files')
+    folder = models.ForeignKey(Folder , on_delete=models.CASCADE, null=True, blank=True, related_name='files')
 
     datetime_created = models.DateTimeField(auto_now_add=True)
     datetime_modified = models.DateTimeField(auto_now=True)

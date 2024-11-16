@@ -125,3 +125,30 @@ body {
     }
 
 }
+
+.folder-card, .file-card {
+    transition: transform 0.2s;
+}
+
+.folder-card:hover, .file-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    float: right;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.thumbnail {
+    width: 10%;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.folder-icon {
+    font-size: 1rem;
+    color: #ffc107;
+}

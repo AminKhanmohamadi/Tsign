@@ -1,0 +1,37 @@
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'upload_file' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="folder" value="{{ request.GET.folder }}">
+                    <div class="mb-3">
+                        <label for="id_name">Name:</label>
+                        <input type="text" name="name" maxlength="100" required="" id="id_name">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_file">File:</label>
+                        <input type="file" class="form-control" name="file" accept="image/*,video/*" required>
+                        <div class="form-text">
+                            Maximum size allowed: images 10 MB, videos 50 MB
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_file_type">File type:</label>
+                        <select name="file_type" required="" id="id_file_type">
+                            <option value="" selected="">---------</option>
+                            <option value="image">Image</option>
+                            <option value="video">Video</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

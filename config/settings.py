@@ -141,7 +141,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR , 'media/')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
-LOGIN_REDIRECT_URL = 'folder-list'
+LOGIN_REDIRECT_URL = 'folder_list'
 LOGOUT_REDIRECT_URL = 'login'
 
 
