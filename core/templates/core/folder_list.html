@@ -136,13 +136,9 @@
                             <div class="col-lg-2">{{ file.datetime_created|date:"Y/m/d" }}</div>
                             <div class="col-lg-2">
                                 <div class="btn-group">
-                                    <button
-                                            class="btn btn-warning rename-file"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#renameFileModal"
-                                            data-id="{{ file.id }}"
-                                            data-name="{{ file.name }}"
-                                    >
+                                    <button class="btn btn-warning rename-file" data-bs-toggle="modal"
+                                            data-bs-target="#renameFileModal" data-id="{{ file.id }}"
+                                            data-name="{{ file.name }}">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <button class="btn btn-sm btn-danger delete-file"
@@ -276,20 +272,20 @@
 {% block exterajs %}
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // گرفتن دکمه‌های تغییر نام پوشه
+
             const renameButtons = document.querySelectorAll('.rename-folder');
             renameButtons.forEach(button => {
                 button.addEventListener('click', function () {
                     const folderId = this.getAttribute('data-id');
                     const folderName = this.getAttribute('data-name');
 
-                    // پر کردن فرم با اطلاعات پوشه
+
                     document.getElementById('folder_id').value = folderId;
                     document.getElementById('folder_name').value = folderName;
                 });
             });
 
-            // ارسال فرم تغییر نام پوشه
+
             const renameForm = document.getElementById('renameFolderForm');
             if (renameForm) {
                 renameForm.addEventListener('submit', function (event) {
@@ -298,14 +294,14 @@
                     const folderId = document.getElementById('folder_id').value;
                     const newName = document.getElementById('folder_name').value;
 
-                    // ارسال درخواست AJAX به سرور
+
                     fetch("{% url 'folder_update_name' %}", {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',  // ارسال داده‌ها به صورت JSON
+                            'Content-Type': 'application/json',
                             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                         },
-                        body: JSON.stringify({  // ارسال داده‌ها به صورت JSON
+                        body: JSON.stringify({
                             folder_id: folderId,
                             name: newName
                         })
@@ -313,11 +309,11 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                // بستن مدال
+
                                 var myModal = new bootstrap.Modal(document.getElementById('renamefModal'));
                                 myModal.hide();
 
-                                // بارگذاری مجدد صفحه برای مشاهده تغییرات
+
                                 location.reload();
                             } else {
                                 alert('Failed to update folder: ' + data.message);
@@ -331,59 +327,55 @@
             }
         });
         document.addEventListener("DOMContentLoaded", function () {
-            // گرفتن دکمه‌های تغییر نام فایل
-            const renameFileButtons = document.querySelectorAll('.rename-file');
-            renameFileButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const fileId = this.getAttribute('data-id');
-                    const fileName = this.getAttribute('data-name');
 
-                    // پر کردن فرم با اطلاعات فایل
+            // Handle file rename button click
+            const renameButtons = document.querySelectorAll('.rename-file');
+            renameButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const fileId = button.getAttribute('data-id');
+                    const fileName = button.getAttribute('data-name');
                     document.getElementById('file_id').value = fileId;
                     document.getElementById('file_name').value = fileName;
                 });
             });
 
-            // ارسال فرم تغییر نام فایل
+            // Handle rename form submission
             const renameFileForm = document.getElementById('renameFileForm');
-            if (renameFileForm) {
-                renameFileForm.addEventListener('submit', function (event) {
-                    event.preventDefault();
+            renameFileForm.addEventListener('submit', function (e) {
+                e.preventDefault();
 
-                    const fileId = document.getElementById('file_id').value;
-                    const newName = document.getElementById('file_name').value;
+                const fileId = document.getElementById('file_id').value;
+                const newName = document.getElementById('file_name').value;
 
-                    // ارسال درخواست AJAX به سرور
-                    fetch("{% url 'file_update' %}", {
+                fetch("{% url 'file_update' %}", {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',  // ارسال داده‌ها به صورت JSON
+                            'Content-Type': 'application/json',
                             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                         },
-                        body: JSON.stringify({  // ارسال داده‌ها به صورت JSON
+                        body: JSON.stringify({
                             file_id: fileId,
                             name: newName
                         })
                     })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // بستن مدال
-                                var myModal = new bootstrap.Modal(document.getElementById('renameFileModal'));
-                                myModal.hide();
-
-                                // بارگذاری مجدد صفحه برای مشاهده تغییرات
-                                location.reload();
-                            } else {
-                                alert('Failed to update file: ' + data.message);
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const fileCardTitle = document.querySelector(`.rename-file[data-id="${fileId}"]`)
+                                .closest('.file-card')
+                                .querySelector('.card-title');
+                            if (fileCardTitle) {
+                                fileCardTitle.textContent = newName;
                             }
-                        })
-                        .catch(error => {
-                            console.error("Error:", error);
-                            alert("An error occurred while updating the file.");
-                        });
-                });
-            }
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('renameFileModal'));
+                            modal.hide();
+                        } else {
+                            alert('Error renaming file');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
         });
+
     </script>
 {% endblock %}

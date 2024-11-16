@@ -50,8 +50,6 @@ class FileUploadView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-
-
 class FolderCreateView(LoginRequiredMixin, CreateView):
     model = Folder
     fields = ['name']
@@ -79,9 +77,6 @@ class FileDeleteView(LoginRequiredMixin, DeleteView):
         return JsonResponse({'success': True})
 
 
-
-
-
 class FolderUpdateView(View):
     def post(self, request, *args, **kwargs):
         try:
@@ -104,12 +99,12 @@ class FileUpdateView(View):
             data = json.loads(request.body)
             file_id = data.get('file_id')
             new_name = data.get('name')
+            print(file_id,new_name)
 
             file = File.objects.get(id=file_id)
             file.name = new_name
+            print(file.name)
             file.save()
-
             return JsonResponse({'success': True, 'new_name': file.name})
         except Exception as e:
             return JsonResponse({'success': False, 'message': str(e)}, status=400)
-

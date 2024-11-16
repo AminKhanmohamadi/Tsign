@@ -1,4 +1,6 @@
 $(document).ready(function () {
+
+    // نمایش پیش‌نمایش فایل هنگام کلیک روی آن
     $('.view-file').on('click', function () {
         const name = $(this).data('name');
         const type = $(this).data('type');
@@ -24,6 +26,7 @@ $(document).ready(function () {
         }
     });
 
+    // نمایش مودال حذف فایل
     $('.delete-file').on('click', function () {
         const fileId = $(this).data('id');
         $('#file_id').val(fileId);
@@ -32,6 +35,7 @@ $(document).ready(function () {
         deleteModal.show();
     });
 
+    // ارسال درخواست حذف فایل
     $('#deleteFileForm').on('submit', function (event) {
         event.preventDefault();
 
@@ -59,6 +63,7 @@ $(document).ready(function () {
         });
     });
 
+    // نمایش مودال حذف فولدر
     $('.delete-folder').on('click', function () {
         const folderId = $(this).data('id');
         $('#folder_id').val(folderId);
@@ -67,16 +72,21 @@ $(document).ready(function () {
         deleteModal.show();
     });
 
+    // ارسال درخواست حذف فولدر
     $('#deleteFolderForm').on('submit', function (event) {
         event.preventDefault();
 
         const folderId = $('#folder_id').val();
         const deleteUrl = $('.delete-folder[data-id="' + folderId + '"]').data('url');
+        const csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
 
         $.ajax({
             url: deleteUrl,
             method: 'POST',
             contentType: 'application/json',
+            headers: {
+                'X-CSRFToken': csrfToken  // اضافه کردن CSRF token به هدر
+            },
             data: JSON.stringify({
                 'folder_id': folderId
             }),
@@ -94,4 +104,5 @@ $(document).ready(function () {
             }
         });
     });
+
 });
